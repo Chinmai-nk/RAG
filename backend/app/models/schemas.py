@@ -1,10 +1,22 @@
 from pydantic import BaseModel
 
 
+class ChunkMetadata(BaseModel):
+    paper_name: str
+    page: int
+
+
+class ChunkSchema(BaseModel):
+    chunk_id: int
+    text: str
+    metadata: ChunkMetadata
+
+
 class UploadResponse(BaseModel):
     filename: str
     pages: int
     text: str
+    chunks: list[ChunkSchema]
 
 
 class ErrorResponse(BaseModel):

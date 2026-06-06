@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
-from app.models.schemas import UploadResponse
+from app.models.schemas import UploadResponse, ChunkSchema, ChunkMetadata
 from app.services.parser import extract_text_from_pdf
 from app.utils.helpers import validate_pdf, save_upload
 
@@ -12,11 +12,19 @@ async def upload_pdf(file: UploadFile = File(...)):
     try:
         validate_pdf(file.filename)
         file_path = await save_upload(file)
-        result = extract_text_from_pdf(file_path)
+        result = extract_text_from_pdf(file_path, file.filename)
         return UploadResponse(
             filename=file.filename,
             pages=result["pages"],
             text=result["text"],
+            chunks=[
+                ChunkSchema(
+                    chunk_id=c["chunk_id"],
+                    text=c["text"],
+                    metadata=ChunkMetadata(**c["metadata"]),
+                )
+                for c in result["chunks"]
+            ],
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
