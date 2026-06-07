@@ -19,5 +19,14 @@ class UploadResponse(BaseModel):
     chunks: list[ChunkSchema]
 
 
+class IndexRequest(BaseModel):
+    chunks: list[ChunkSchema]
+
+
+class IndexResponse(BaseModel):
+    status: str
+    chunk_count: int
+
+
 class ErrorResponse(BaseModel):
     detail: str
