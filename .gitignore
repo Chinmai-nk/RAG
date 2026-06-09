@@ -1,3 +1,7 @@
 plan.md
+progress.md
 backend/uploads/
+backend/chroma_db/
 backend/.env
+venv/
+response.json

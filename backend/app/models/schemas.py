@@ -28,5 +28,22 @@ class IndexResponse(BaseModel):
     chunk_count: int
 
 
+class SearchRequest(BaseModel):
+    query: str
+    top_k: int = 5
+
+
+class SearchResult(BaseModel):
+    chunk_id: int
+    text: str
+    metadata: ChunkMetadata
+    distance: float
+
+
+class SearchResponse(BaseModel):
+    query: str
+    results: list[SearchResult]
+
+
 class ErrorResponse(BaseModel):
     detail: str

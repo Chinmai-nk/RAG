@@ -36,3 +36,25 @@ def add_chunks(chunks: list[dict], embeddings: list[list[float]]) -> int:
     )
 
     return len(chunks)
+
+
+def search_chunks(query_embedding: list[float], top_k: int = 5) -> list[dict]:
+    collection = get_collection()
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k,
+        include=["documents", "metadatas", "distances"],
+    )
+
+    output = []
+    for i in range(len(results["ids"][0])):
+        output.append({
+            "chunk_id": results["metadatas"][0][i].get("chunk_id"),
+            "text": results["documents"][0][i],
+            "metadata": {
+                "paper_name": results["metadatas"][0][i].get("paper_name"),
+                "page": results["metadatas"][0][i].get("page"),
+            },
+            "distance": results["distances"][0][i],
+        })
+    return output
