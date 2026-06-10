@@ -45,5 +45,21 @@ class SearchResponse(BaseModel):
     results: list[SearchResult]
 
 
+class ChatRequest(BaseModel):
+    query: str
+    top_k: int = 5
+
+
+class SourceSchema(BaseModel):
+    text: str
+    page: int
+    paper_name: str
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    sources: list[SourceSchema]
+
+
 class ErrorResponse(BaseModel):
     detail: str
