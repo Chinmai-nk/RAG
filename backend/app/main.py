@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import UPLOAD_DIR, CHROMA_DB_PATH
-from app.routers import upload, index, search, chat, literature
+from app.routers import upload, index, search, chat, literature, papers
 
 
 @asynccontextmanager
@@ -32,6 +32,7 @@ app.include_router(index.router)
 app.include_router(search.router)
 app.include_router(chat.router)
 app.include_router(literature.router)
+app.include_router(papers.router)
 
 
 @app.get("/health")

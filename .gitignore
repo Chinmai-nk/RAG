@@ -5,3 +5,6 @@ backend/chroma_db/
 backend/.env
 venv/
 response.json
+frontend/node_modules/
+frontend/dist/
+frontend.md

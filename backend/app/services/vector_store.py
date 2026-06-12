@@ -53,6 +53,26 @@ def _format_results(results: dict) -> list[dict]:
     return output
 
 
+def list_papers() -> list[dict]:
+    collection = get_collection()
+    all_data = collection.get(include=["metadatas"])
+    seen = {}
+    for meta in all_data["metadatas"]:
+        name = meta["paper_name"]
+        if name not in seen:
+            seen[name] = {"name": name, "pages": set(), "chunks": 0}
+        seen[name]["pages"].add(meta["page"])
+        seen[name]["chunks"] += 1
+    result = []
+    for p in seen.values():
+        result.append({
+            "name": p["name"],
+            "pages": len(p["pages"]),
+            "chunks": p["chunks"],
+        })
+    return result
+
+
 def search_chunks(
     query_embedding: list[float],
     top_k: int = 5,
