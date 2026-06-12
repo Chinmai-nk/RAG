@@ -32,6 +32,7 @@ class SearchRequest(BaseModel):
     query: str
     top_k: int = 5
     paper_names: list[str] | None = None
+    use_rerank: bool = True
 
 
 class SearchResult(BaseModel):
@@ -39,6 +40,7 @@ class SearchResult(BaseModel):
     text: str
     metadata: ChunkMetadata
     distance: float
+    rerank_score: float | None = None
 
 
 class SearchResponse(BaseModel):
@@ -50,6 +52,7 @@ class ChatRequest(BaseModel):
     query: str
     top_k: int = 5
     paper_names: list[str] | None = None
+    use_rerank: bool = True
 
 
 class SourceSchema(BaseModel):
@@ -60,6 +63,19 @@ class SourceSchema(BaseModel):
 
 class ChatResponse(BaseModel):
     answer: str
+    sources: list[SourceSchema]
+
+
+class LitReviewRequest(BaseModel):
+    topic: str
+    top_k: int = 20
+    paper_names: list[str] | None = None
+    use_rerank: bool = True
+
+
+class LitReviewResponse(BaseModel):
+    topic: str
+    review: str
     sources: list[SourceSchema]
 
 

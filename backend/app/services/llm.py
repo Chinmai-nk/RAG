@@ -40,3 +40,38 @@ def generate_answer(context_chunks: list[dict], query: str) -> str:
     client = get_client()
     response = client.models.generate_content(model=MODEL, contents=prompt)
     return response.text
+
+
+def build_lit_review_prompt(topic: str, context_chunks: list[dict]) -> str:
+    context_parts = []
+    for c in context_chunks:
+        meta = c["metadata"]
+        context_parts.append(
+            f"[Source: {meta['paper_name']} | Page {meta['page']}]\n{c['text']}"
+        )
+    context_str = "\n\n".join(context_parts)
+
+    prompt = f"""Generate a structured literature review on the topic: {topic}
+
+Use only the provided context from research papers.
+
+Structure the review with the following sections:
+- Introduction
+- Existing Methods
+- Results
+- Limitations
+- Research Gaps
+
+Cite each claim using [Source: paper.pdf | Page N].
+
+Context:
+{context_str}"""
+
+    return prompt
+
+
+def generate_literature_review(topic: str, context_chunks: list[dict]) -> str:
+    prompt = build_lit_review_prompt(topic, context_chunks)
+    client = get_client()
+    response = client.models.generate_content(model=MODEL, contents=prompt)
+    return response.text
