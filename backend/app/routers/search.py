@@ -11,7 +11,7 @@ router = APIRouter(prefix="/search", tags=["search"])
 async def search(body: SearchRequest):
     try:
         [query_embedding] = embed_texts([body.query])
-        results = search_chunks(query_embedding, body.top_k)
+        results = search_chunks(query_embedding, body.top_k, body.paper_names)
         return SearchResponse(
             query=body.query,
             results=[

@@ -12,7 +12,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def chat(body: ChatRequest):
     try:
         [query_embedding] = embed_texts([body.query])
-        chunks = search_chunks(query_embedding, body.top_k)
+        chunks = search_chunks(query_embedding, body.top_k, body.paper_names)
 
         answer = generate_answer(chunks, body.query)
 

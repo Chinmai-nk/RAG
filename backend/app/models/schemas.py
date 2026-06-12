@@ -31,6 +31,7 @@ class IndexResponse(BaseModel):
 class SearchRequest(BaseModel):
     query: str
     top_k: int = 5
+    paper_names: list[str] | None = None
 
 
 class SearchResult(BaseModel):
@@ -48,6 +49,7 @@ class SearchResponse(BaseModel):
 class ChatRequest(BaseModel):
     query: str
     top_k: int = 5
+    paper_names: list[str] | None = None
 
 
 class SourceSchema(BaseModel):

@@ -38,14 +38,7 @@ def add_chunks(chunks: list[dict], embeddings: list[list[float]]) -> int:
     return len(chunks)
 
 
-def search_chunks(query_embedding: list[float], top_k: int = 5) -> list[dict]:
-    collection = get_collection()
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=top_k,
-        include=["documents", "metadatas", "distances"],
-    )
-
+def _format_results(results: dict) -> list[dict]:
     output = []
     for i in range(len(results["ids"][0])):
         output.append({
@@ -58,3 +51,35 @@ def search_chunks(query_embedding: list[float], top_k: int = 5) -> list[dict]:
             "distance": results["distances"][0][i],
         })
     return output
+
+
+def search_chunks(
+    query_embedding: list[float],
+    top_k: int = 5,
+    paper_names: list[str] | None = None,
+) -> list[dict]:
+    collection = get_collection()
+
+    if paper_names and len(paper_names) > 1:
+        per_paper = max(1, top_k // len(paper_names))
+        all_results = []
+        for name in paper_names:
+            results = collection.query(
+                query_embeddings=[query_embedding],
+                n_results=per_paper,
+                where={"paper_name": name},
+                include=["documents", "metadatas", "distances"],
+            )
+            all_results.extend(_format_results(results))
+        return all_results
+
+    where_filter = None
+    if paper_names:
+        where_filter = {"paper_name": {"$in": paper_names}}
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k,
+        where=where_filter,
+        include=["documents", "metadatas", "distances"],
+    )
+    return _format_results(results)
