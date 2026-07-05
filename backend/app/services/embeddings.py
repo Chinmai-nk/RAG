@@ -4,6 +4,8 @@ from app.config import GEMINI_API_KEY, USE_LOCAL_EMBEDDINGS
 
 MODEL_NAME = "BAAI/bge-small-en-v1.5"
 GEMINI_EMBEDDING_MODEL = "gemini-embedding-001"
+BATCH_SIZE = 100
+
 
 @lru_cache(maxsize=1)
 def get_gemini_client():
@@ -20,11 +22,22 @@ def get_embedding_model():
 def embed_texts(texts: list[str]) -> list[list[float]]:
     if not USE_LOCAL_EMBEDDINGS:
         client = get_gemini_client()
-        result = client.models.embed_content(
-            model=GEMINI_EMBEDDING_MODEL,
-            contents=texts,
-        )
-        return [e.values for e in result.embeddings]
+
+        all_embeddings = []
+
+        for i in range(0, len(texts), BATCH_SIZE):
+            batch = texts[i:i + BATCH_SIZE]
+
+            result = client.models.embed_content(
+                model=GEMINI_EMBEDDING_MODEL,
+                contents=batch,
+            )
+
+            all_embeddings.extend(
+                [embedding.values for embedding in result.embeddings]
+            )
+
+        return all_embeddings
 
     model = get_embedding_model()
     embeddings = model.encode(texts, normalize_embeddings=True)
