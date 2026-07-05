@@ -22,8 +22,12 @@ export function AppProvider({ children }) {
     )
   }
 
+  function removeSelectedPaper(name) {
+    setSelectedPapers((prev) => prev.filter((p) => p !== name))
+  }
+
   return (
-    <AppContext.Provider value={{ papers, selectedPapers, togglePaper, fetchPapers }}>
+    <AppContext.Provider value={{ papers, selectedPapers, togglePaper, removeSelectedPaper, fetchPapers }}>
       {children}
     </AppContext.Provider>
   )

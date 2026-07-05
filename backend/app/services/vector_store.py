@@ -53,6 +53,15 @@ def _format_results(results: dict) -> list[dict]:
     return output
 
 
+def delete_paper(paper_name: str) -> int:
+    collection = get_collection()
+    results = collection.get(where={"paper_name": paper_name})
+    ids = results["ids"]
+    if ids:
+        collection.delete(ids=ids)
+    return len(ids)
+
+
 def list_papers() -> list[dict]:
     collection = get_collection()
     all_data = collection.get(include=["metadatas"])

@@ -79,5 +79,10 @@ class LitReviewResponse(BaseModel):
     sources: list[SourceSchema]
 
 
+class DeleteResponse(BaseModel):
+    status: str
+    chunk_count: int
+
+
 class ErrorResponse(BaseModel):
     detail: str

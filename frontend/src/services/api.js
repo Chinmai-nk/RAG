@@ -26,3 +26,8 @@ export async function literatureReview(topic, top_k = 20, paper_names = null, us
   const { data } = await axios.post('/literature', { topic, top_k, paper_names, use_rerank })
   return data
 }
+
+export async function deletePaper(filename) {
+  const { data } = await axios.delete(`/papers/${encodeURIComponent(filename)}`)
+  return data
+}
