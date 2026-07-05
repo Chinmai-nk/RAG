@@ -3,8 +3,7 @@ from functools import lru_cache
 from app.config import GEMINI_API_KEY, USE_LOCAL_EMBEDDINGS
 
 MODEL_NAME = "BAAI/bge-small-en-v1.5"
-GEMINI_EMBEDDING_MODEL = "text-embedding-004"
-
+GEMINI_EMBEDDING_MODEL = "gemini-embedding-001"
 
 @lru_cache(maxsize=1)
 def get_gemini_client():
