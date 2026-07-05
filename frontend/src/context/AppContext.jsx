@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 
+const API = import.meta.env.VITE_API_URL || ''
+
 const AppContext = createContext()
 
 export function AppProvider({ children }) {
@@ -9,7 +11,7 @@ export function AppProvider({ children }) {
 
   const fetchPapers = useCallback(async () => {
     try {
-      const { data } = await axios.get('/papers')
+      const { data } = await axios.get(`${API}/papers`)
       setPapers(data.papers || [])
     } catch {}
   }, [])
