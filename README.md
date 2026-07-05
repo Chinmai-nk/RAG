@@ -6,8 +6,8 @@ A full-stack RAG (Retrieval-Augmented Generation) system for uploading, searchin
 
 - **PDF Upload & Parsing** — Extract text page-by-page via PyMuPDF
 - **Semantic Chunking** — LangChain `RecursiveCharacterTextSplitter` with page-aware metadata
-- **Vector Search** — BGE-small embeddings (384-dim) stored in ChromaDB with cosine similarity
-- **Reranking** — Cross-encoder (`ms-marco-MiniLM-L-6-v2`) scores retrieved chunks for higher relevance
+- **Vector Search** — BGE-small embeddings (384-dim) or Gemini API embeddings stored in ChromaDB with cosine similarity
+- **Reranking** — Cross-encoder (`ms-marco-TinyBERT-L-2`) scores retrieved chunks for higher relevance
 - **Citation-Backed Q&A** — Gemini LLM generates answers grounded in retrieved chunks with source labels
 - **Multi-Paper Comparison** — Filter by paper or compare across papers with balanced retrieval
 - **Literature Review Generator** — Structured markdown reviews (Introduction, Methods, Results, Limitations, Gaps)
@@ -22,7 +22,7 @@ A full-stack RAG (Retrieval-Augmented Generation) system for uploading, searchin
 | Text Splitting | LangChain `RecursiveCharacterTextSplitter` |
 | Embeddings | `BAAI/bge-small-en-v1.5` (Sentence Transformers) |
 | Vector Store | ChromaDB (persistent) |
-| Reranking | `cross-encoder/ms-marco-MiniLM-L-6-v2` |
+| Reranking | `cross-encoder/ms-marco-TinyBERT-L-2` |
 | LLM | Google Gemini (`google-genai`) |
 | Frontend | React 18 + Vite + TailwindCSS |
 | Icons | Lucide React |
@@ -32,7 +32,7 @@ A full-stack RAG (Retrieval-Augmented Generation) system for uploading, searchin
 
 ```
 Upload PDF → PyMuPDF extracts text → RecursiveCharacterTextSplitter
-→ BGE-small embeddings → ChromaDB storage
+→ embeddings (BGE-small or Gemini API) → ChromaDB storage
 
 Query → same embedding → ChromaDB similarity search → optional cross-encoder rerank
 → Gemini generates answer with source citations
@@ -91,11 +91,20 @@ Frontend runs on `http://localhost:5173`. API requests are proxied to the backen
 | DELETE | `/papers/{filename}` | Delete a paper and its chunks |
 | GET | `/health` | Health check |
 
+## Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `GEMINI_API_KEY` | — | Required for LLM features and Gemini embeddings |
+| `USE_LOCAL_EMBEDDINGS` | `true` | `false` uses Gemini API embeddings (lighter, no PyTorch); `true` uses BGE-small locally |
+
+Set `USE_LOCAL_EMBEDDINGS=false` on constrained environments (e.g., Render free tier). This avoids loading PyTorch/sentence-transformers and uses Gemini's `text-embedding-004` API instead.
+
 ### Notes
 
 - `uploads/` and `chroma_db/` are wiped on every server restart (clean slate)
-- Reranking is enabled by default; pass `use_rerank: false` to skip it
-- The cross-encoder model (~500MB) and BGE model (~133MB) download on first run
+- Reranking is enabled by default; pass `use_rerank: false` to skip it (always skipped when `USE_LOCAL_EMBEDDINGS=false`)
+- The cross-encoder model (~50MB with TinyBERT) and BGE model (~133MB) download on first run locally
 - `POST /literature` defaults to `top_k=20` for broader context
 
 ## Project Structure
@@ -116,10 +125,10 @@ rag/
 │   │   ├── services/
 │   │   │   ├── parser.py         # PyMuPDF extraction
 │   │   │   ├── chunker.py        # Text splitting
-│   │   │   ├── embeddings.py     # BGE model
+│   │   │   ├── embeddings.py     # BGE-small or Gemini embeddings
 │   │   │   ├── vector_store.py   # ChromaDB operations
 │   │   │   ├── llm.py            # Gemini prompt + generation
-│   │   │   └── reranker.py       # Cross-encoder reranking
+│   │   │   └── reranker.py       # Cross-encoder reranking (no-op on Render)
 │   │   └── models/
 │   │       └── schemas.py        # Pydantic models
 │   ├── requirements.txt
@@ -137,7 +146,8 @@ rag/
     │   └── pages/                # Home, Chat, Search, Papers, Upload, Literature
     ├── package.json
     ├── vite.config.js
-    └── tailwind.config.js
+    ├── tailwind.config.js
+    └── vercel.json                # SPA rewrites for Vercel deployment
 ```
 
 ## License
