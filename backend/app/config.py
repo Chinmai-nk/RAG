@@ -12,5 +12,7 @@ CHROMA_DB_PATH.mkdir(exist_ok=True)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
+USE_LOCAL_EMBEDDINGS = os.getenv("USE_LOCAL_EMBEDDINGS", "true").lower() == "true"
+
 ALLOWED_EXTENSIONS = {".pdf"}
 MAX_FILE_SIZE = 50 * 1024 * 1024
