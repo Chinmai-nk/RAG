@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from sentence_transformers import CrossEncoder
 
-MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+MODEL_NAME = "cross-encoder/ms-marco-TinyBERT-L-2"
 
 
 @lru_cache(maxsize=1)
